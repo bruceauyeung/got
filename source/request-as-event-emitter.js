@@ -66,7 +66,33 @@ module.exports = (options, input) => {
 			const protocolName = options.protocol === 'https:' ? 'https' : 'http';
 			options.agent = agents[protocolName] || options.agent;
 		}
-
+		
+                //note(bruceauyeung):let got respect proxy environment variables
+		let httpProxy = '';
+		if(process.env.http_proxy && process.env.http_proxy.trim() !== ''){
+			httpProxy = process.env.http_proxy.trim();
+		}else if(process.env.https_proxy && process.env.https_proxy.trim() !== ''){
+			httpProxy = process.env.https_proxy.trim();
+		}else if(process.env.all_proxy && process.env.all_proxy.trim() !== ''){
+			httpProxy = process.env.all_proxy.trim();
+		}else if(process.env.proxy && process.env.proxy.trim() !== ''){
+			httpProxy = process.env.proxy.trim();
+		}
+		if(httpProxy !== ''){
+			let host = httpProxy;
+			if(host.startsWith('http://')){
+				host = host.substring('http://'.length);
+			}
+			if(host.indexOf(':') !== -1){
+				host = host.split(':')[0];
+			}
+			options.agent = require('tunnel').httpsOverHttp({
+				proxy: {
+					host: host
+				}
+			});
+		}
+		
 		/* istanbul ignore next: electron.net is broken */
 		if (options.useElectronNet && process.versions.electron) {
 			const r = ({x: require})['yx'.slice(1)]; // Trick webpack
