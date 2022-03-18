@@ -80,15 +80,19 @@ module.exports = (options, input) => {
 		}
 		if(httpProxy !== ''){
 			let host = httpProxy;
+			let port = 80;
 			if(host.startsWith('http://')){
 				host = host.substring('http://'.length);
 			}
 			if(host.indexOf(':') !== -1){
-				host = host.split(':')[0];
+				let parts = host.split(':');
+				host = parts[0];
+				port = parseInt(parts[1]);
 			}
 			options.agent = require('tunnel').httpsOverHttp({
 				proxy: {
-					host: host
+					host: host,
+					port: port
 				}
 			});
 		}
