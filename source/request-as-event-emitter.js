@@ -69,7 +69,9 @@ module.exports = (options, input) => {
 		
                 //note(bruceauyeung):let got respect proxy environment variables
 		let httpProxy = '';
-		if(process.env.http_proxy && process.env.http_proxy.trim() !== ''){
+		if(process.env.got_proxy && process.env.got_proxy.trim() !== ''){
+			httpProxy = process.env.got_proxy.trim();
+		}else if(process.env.http_proxy && process.env.http_proxy.trim() !== ''){
 			httpProxy = process.env.http_proxy.trim();
 		}else if(process.env.https_proxy && process.env.https_proxy.trim() !== ''){
 			httpProxy = process.env.https_proxy.trim();
